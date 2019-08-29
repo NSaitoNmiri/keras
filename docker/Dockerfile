@@ -3,7 +3,7 @@ ARG cudnn_version=7
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
 
 # Install system packages
-RUN apt-get update && apt-get install -y --no-install-recommends \
+RUN apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y && apt-get update && apt-get install -y --no-install-recommends \
       bzip2 \
       g++ \
       git \
@@ -11,8 +11,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libgl1-mesa-glx \
       libhdf5-dev \
       openmpi-bin \
-      wget && \
-    rm -rf /var/lib/apt/lists/*
+      wget \
+      x11vnc fluxbox xvfb \
+      unzip \
+      inetutils-ping
+
 
 # Install conda
 ENV CONDA_DIR /opt/conda
@@ -23,6 +26,18 @@ RUN wget --quiet --no-check-certificate https://repo.continuum.io/miniconda/Mini
     /bin/bash /Miniconda3-4.2.12-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
     rm Miniconda3-4.2.12-Linux-x86_64.sh && \
     echo export PATH=$CONDA_DIR/bin:'$PATH' > /etc/profile.d/conda.sh
+
+# Install packages for gym
+#RUN apt-get install python-pip && pip install --upgrade pip && pip install cmake
+#RUN apt-get install -y \
+#      python-pyglet python3-opengl zlib1g-dev libjpeg-dev patchelf \
+#      cmake swig libboost-all-dev libsdl2-dev libosmesa6-dev xvfb ffmpeg \
+#      sudo-ldap
+
+# Install packages misc
+#RUN apt-get install -y \
+#      sudo nano less 
+
 
 # Install Python packages and keras
 ENV NB_USER keras
@@ -42,8 +57,10 @@ RUN conda install -y python=${python_version} && \
     pip install --upgrade pip && \
     pip install \
       sklearn_pandas \
-      tensorflow-gpu \
-      cntk-gpu && \
+      tensorflow-gpu==1.12.0 \
+      cntk-gpu \
+      opencv-python \
+      seaborn && \
     conda install \
       bcolz \
       h5py \
@@ -61,11 +78,12 @@ RUN conda install -y python=${python_version} && \
       theano \
       mkdocs \
       && \
-    git clone git://github.com/keras-team/keras.git /src && pip install -e /src[tests] && \
-    pip install git+git://github.com/keras-team/keras.git && \
+    git clone https://github.com/keras-team/keras.git /src && pip install -e /src[tests] && \
+    pip install git+https://github.com/keras-team/keras.git && \
     conda clean -yt
 
 ADD theanorc /home/keras/.theanorc
+ADD jupyter_notebook_config.py /home/keras/.jupyter/jupyter_notebook_config.py
 
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
