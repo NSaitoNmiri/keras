@@ -2,20 +2,14 @@ ARG cuda_version=9.0
 ARG cudnn_version=7
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
 
-# Install system packages
+# Install packages
 RUN apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y && apt-get update && apt-get install -y --no-install-recommends \
-      bzip2 \
-      g++ \
-      git \
-      graphviz \
-      libgl1-mesa-glx \
-      libhdf5-dev \
-      openmpi-bin \
-      wget \
-      x11vnc fluxbox xvfb \
-      unzip \
-      inetutils-ping
-
+      bzip2 unzip inetutils-ping \
+      g++ git pkg-config \
+      libgl1-mesa-glx libhdf5-dev openmpi-bin \
+      wget x11vnc fluxbox xvfb graphviz \
+      libopencv-core-dev libopencv-flann-dev libopencv-imgproc-dev libopencv-photo-dev libopencv-video-dev libopencv-features2d-dev \
+      libopencv-objdetect-dev libopencv-calib3d-dev libopencv-ml-dev libopencv-contrib-dev libopencv-dev
 
 # Install conda
 ENV CONDA_DIR /opt/conda
@@ -26,18 +20,6 @@ RUN wget --quiet --no-check-certificate https://repo.continuum.io/miniconda/Mini
     /bin/bash /Miniconda3-4.2.12-Linux-x86_64.sh -f -b -p $CONDA_DIR && \
     rm Miniconda3-4.2.12-Linux-x86_64.sh && \
     echo export PATH=$CONDA_DIR/bin:'$PATH' > /etc/profile.d/conda.sh
-
-# Install packages for gym
-#RUN apt-get install python-pip && pip install --upgrade pip && pip install cmake
-#RUN apt-get install -y \
-#      python-pyglet python3-opengl zlib1g-dev libjpeg-dev patchelf \
-#      cmake swig libboost-all-dev libsdl2-dev libosmesa6-dev xvfb ffmpeg \
-#      sudo-ldap
-
-# Install packages misc
-#RUN apt-get install -y \
-#      sudo nano less 
-
 
 # Install Python packages and keras
 ENV NB_USER keras
