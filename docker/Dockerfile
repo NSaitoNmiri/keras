@@ -3,13 +3,13 @@ ARG cudnn_version=7
 FROM nvidia/cuda:${cuda_version}-cudnn${cudnn_version}-devel
 
 # Install packages
-RUN apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y && apt-get update && apt-get install -y --no-install-recommends \
-      bzip2 unzip inetutils-ping \
-      g++ git pkg-config \
+RUN apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y && apt-get install -y --no-install-recommends \
+      bzip2 unzip inetutils-ping file \
+      g++ git pkg-config less lv nano \
       libgl1-mesa-glx libhdf5-dev openmpi-bin \
       wget x11vnc fluxbox xvfb graphviz \
       libopencv-core-dev libopencv-flann-dev libopencv-imgproc-dev libopencv-photo-dev libopencv-video-dev libopencv-features2d-dev \
-      libopencv-objdetect-dev libopencv-calib3d-dev libopencv-ml-dev libopencv-contrib-dev libopencv-dev
+      libopencv-objdetect-dev libopencv-calib3d-dev libopencv-ml-dev libopencv-contrib-dev libopencv-dev libopencv-highgui-dev
 
 # Install conda
 ENV CONDA_DIR /opt/conda
@@ -39,7 +39,7 @@ RUN conda install -y python=${python_version} && \
     pip install --upgrade pip && \
     pip install \
       sklearn_pandas \
-      tensorflow-gpu==1.12.0 \
+      tensorflow-gpu==1.14.0 \
       cntk-gpu \
       opencv-python \
       seaborn && \
